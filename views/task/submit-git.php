@@ -68,6 +68,8 @@ use app\models\Task;
                   ['class' => 'control-label bolder blue', 'style' => 'display: none']) ?>
           <!-- 文件列表 end -->
 
+          <?= $form->field($task, 'bind_task_id')->label(yii::t('task', 'bind task id'), ['class' => 'control-label bolder blue'])->hint(yii::t('task', 'bind task id tip')) ?>
+          
       </div><!-- /.box-body -->
 
       <div class="box-footer">

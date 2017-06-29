@@ -113,7 +113,7 @@ class Task extends \yii\db\ActiveRecord
             [['user_id', 'project_id', 'action', 'status', 'file_transmission_mode'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['file_list'], 'string'],
-            [['title', 'link_id', 'ex_link_id', 'commit_id', 'branch'], 'string', 'max' => 100],
+            [['title', 'link_id', 'ex_link_id', 'commit_id', 'branch', 'bind_task_id'], 'string', 'max' => 100],
         ];
     }
 
@@ -131,6 +131,7 @@ class Task extends \yii\db\ActiveRecord
             'title' => '上线单标题',
             'link_id' => 'Link ID',
             'ex_link_id' => 'Ex Link ID',
+            'bind_task_id' => 'Bind Task ID',
             'commit_id' => 'Commit ID',
             'created_at' => 'Created At',
         ];

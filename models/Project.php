@@ -68,6 +68,8 @@ class Project extends \yii\db\ActiveRecord
 
     const REPO_SVN = 'svn';
 
+    public static $currentProjectId;
+
     public static $CONF;
 
     public static $LEVEL = [
@@ -159,10 +161,10 @@ class Project extends \yii\db\ActiveRecord
      * @return string|\yii\db\ActiveQuery
      */
     public static function getConf($id = null) {
-        if (empty(static::$CONF)) {
-            static::$CONF = static::findOne($id);
+        if (empty(static::$CONF[$id])) {
+            static::$CONF[$id] = static::findOne($id);
         }
-        return static::$CONF;
+        return static::$CONF[$id];
     }
 
     /**
@@ -180,15 +182,38 @@ class Project extends \yii\db\ActiveRecord
     }
 
     /**
+     * 获取当前项目配置，用于多项目捆绑发布，兼容之前单项目发布
+     * 
+     * @return array 
+     */
+    public static function getCurrentConfig()
+    {
+        $config = [];
+        if (static::$currentProjectId)
+        {
+            $config = static::$CONF[static::$currentProjectId];
+        } elseif(is_array(static::$CONF)) {
+            reset(static::$CONF);
+            $config = current(static::$CONF);
+        } else {
+            $config = static::$CONF;
+        }
+
+        return $config;
+    }
+
+    /**
      * 拼接宿主机的部署隔离工作空间
      * {deploy_from}/{env}/{project}-YYmmdd-HHiiss
      *
      * @return string
      */
     public static function getDeployWorkspace($version) {
-        $from    = static::$CONF->deploy_from;
-        $env     = isset(static::$LEVEL[static::$CONF->level]) ? static::$LEVEL[static::$CONF->level] : 'unknow';
-        $project = static::getGitProjectName(static::$CONF->repo_url);
+        $config = static::getCurrentConfig();
+        
+        $from    = $config->deploy_from;
+        $env     = isset(static::$LEVEL[$config->level]) ? static::$LEVEL[$config->level] : 'unknow';
+        $project = static::getGitProjectName($config->repo_url);
 
         return sprintf("%s/%s/%s-%s", rtrim($from, '/'), rtrim($env, '/'), $project, $version);
     }
@@ -213,9 +238,11 @@ class Project extends \yii\db\ActiveRecord
      * @return string
      */
     public static function getDeployFromDir() {
-        $from    = static::$CONF->deploy_from;
-        $env     = isset(static::$LEVEL[static::$CONF->level]) ? static::$LEVEL[static::$CONF->level] : 'unknow';
-        $project = static::getGitProjectName(static::$CONF->repo_url);
+        $config = static::getCurrentConfig();
+
+        $from    = $config->deploy_from;
+        $env     = isset(static::$LEVEL[$config->level]) ? static::$LEVEL[$config->level] : 'unknow';
+        $project = static::getGitProjectName($config->repo_url);
 
         return sprintf("%s/%s/%s", rtrim($from, '/'), rtrim($env, '/'), $project);
     }
@@ -227,15 +254,16 @@ class Project extends \yii\db\ActiveRecord
      * @return string
      */
     public static function getSvnDeployBranchFromDir($branchName = 'trunk') {
+        $config = static::getCurrentConfig();
 
         $deployFromDir = static::getDeployFromDir();
         if ($branchName == '') {
             $branchFromDir = $deployFromDir;
         } elseif ($branchName == 'trunk') {
             $branchFromDir = sprintf('%s/trunk', $deployFromDir);
-        } elseif (static::$CONF->repo_mode == static::REPO_MODE_BRANCH) {
+        } elseif ($config->repo_mode == static::REPO_MODE_BRANCH) {
             $branchFromDir = sprintf('%s/branches/%s', $deployFromDir, $branchName);
-        } elseif (static::$CONF->repo_mode == static::REPO_MODE_TAG) {
+        } elseif ($config->repo_mode == static::REPO_MODE_TAG) {
             $branchFromDir = sprintf('%s/tags/%s', $deployFromDir, $branchName);
         }
 
@@ -250,7 +278,9 @@ class Project extends \yii\db\ActiveRecord
      * @return string
      */
     public static function getTargetWorkspace() {
-        return rtrim(static::$CONF->release_to, '/');
+        $config = static::getCurrentConfig();
+
+        return rtrim($config->release_to, '/');
     }
 
     /**
@@ -261,8 +291,9 @@ class Project extends \yii\db\ActiveRecord
      * @return string
      */
     public static function getReleaseVersionDir($version = '') {
-        return sprintf('%s/%s/%s', rtrim(static::$CONF->release_library, '/'),
-            static::getGitProjectName(static::$CONF->repo_url), $version);
+        $config = static::getCurrentConfig();
+        return sprintf('%s/%s/%s', rtrim($config->release_library, '/'),
+            static::getGitProjectName($config->repo_url), $version);
     }
 
     /**
@@ -281,7 +312,8 @@ class Project extends \yii\db\ActiveRecord
      * 获取当前进程配置的目标机器host列表
      */
     public static function getHosts() {
-        return GlobalHelper::str2arr(static::$CONF->hosts);
+        $config = static::getCurrentConfig();
+        return GlobalHelper::str2arr($config->hosts);
     }
 
     /**
@@ -290,7 +322,8 @@ class Project extends \yii\db\ActiveRecord
      * @return boolean
      */
     public static function getAnsibleStatus() {
-        return (bool) static::$CONF->ansible;
+        $config = static::getCurrentConfig();
+        return (bool) $config->ansible;
     }
 
     /**
@@ -303,7 +336,8 @@ class Project extends \yii\db\ActiveRecord
      */
     public static function getAnsibleHostsFile($projectId = 0) {
         if (!$projectId) {
-            $projectId = static::$CONF->id;
+            $config = static::getCurrentConfig();
+            $projectId = $config->id;
         }
         return sprintf('%s/project_%d', rtrim(yii::$app->params['ansible_hosts.dir'], '/'), $projectId);
     }

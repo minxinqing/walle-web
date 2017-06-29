@@ -15,6 +15,7 @@ return [
     'create a rollback job failed' => 'failed to create a rollback job ',
 
     'l_user' => 'User',
+    'l_task_id' => 'Task Id',
     'l_project' => 'Project',
     'l_title' => 'Title',
     'l_time' => 'Time',
@@ -31,6 +32,8 @@ return [
     'all branches' => 'View All branches',
     'select branch' => 'Select Branch',
     'submit title' => 'Title',
+    'bind task id' => 'Bind Task Id',
+    'bind task id tip' => 'bind task id tip',
     'file list placeholder' => '1.Distribute specified directory：dir_name<br />2.Distribute specified file：file_name<br />3.Distribute specified file：file*',
     'file list' => 'File list',
     'diff tip' => 'Auto get the diff files between two commit id of branch/tag',

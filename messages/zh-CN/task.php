@@ -15,6 +15,7 @@ return [
     'create a rollback job failed' => '生成回滚任务失败',
 
     'l_user' => '开发者',
+    'l_task_id' => '上线单ID',
     'l_project' => '项目',
     'l_title' => '上线单标题',
     'l_time' => '上线时间',
@@ -31,6 +32,8 @@ return [
     'all branches' => '查看所有分支',
     'select branch' => '版本选取',
     'submit title' => '上线单标题',
+    'bind task id' => '捆绑上线单ID',
+    'bind task id tip' => '为空则不捆绑上线单，多个用","隔开',
     'file list placeholder' => '1.上线指定目录：dir_name<br />2.上线指定文件：file_name<br />3.通配符 file*',
     'file list' => '文件列表',
     'diff tip' => '自动获取该分支/tag下的两提交历史间的文件',

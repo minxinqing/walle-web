@@ -45,6 +45,7 @@ use yii\helpers\Url;
         <table class="table table-striped table-bordered table-hover">
             <tbody>
             <tr>
+                <th><?= yii::t('task', 'l_task_id') ?></th>
                 <?php if ($audit) { ?>
                     <th><?= yii::t('task', 'l_user') ?></th>
                 <?php } ?>
@@ -58,6 +59,7 @@ use yii\helpers\Url;
             </tr>
             <?php foreach ($list as $item) { ?>
                 <tr>
+                    <td><?= $item['id'].($item['bind_task_id'] ? '('.$item['bind_task_id'].')' : '') ?></td>
                     <?php if ($audit) { ?>
                         <td><?= $item['user']['realname'] ?></td>
                     <?php } ?>
