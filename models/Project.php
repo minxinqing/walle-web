@@ -161,10 +161,19 @@ class Project extends \yii\db\ActiveRecord
      * @return string|\yii\db\ActiveQuery
      */
     public static function getConf($id = null) {
-        if (empty(static::$CONF[$id])) {
+        if (empty(static::$CONF[$id]) AND $id) {
             static::$CONF[$id] = static::findOne($id);
         }
-        return static::$CONF[$id];
+
+        if ($id)
+        {
+            $config = static::$CONF[$id];
+        } else {
+            reset(static::$CONF);
+            $config = current(static::$CONF);
+        }
+
+        return $config;
     }
 
     /**
