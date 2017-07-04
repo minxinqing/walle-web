@@ -99,7 +99,7 @@ class Record extends \yii\db\ActiveRecord
     public static function saveRecord(Command $commandObj, $task_id, $action, $duration) {
         $record = new static();
         $record->attributes = [
-            'user_id'    => \Yii::$app->user->id,
+            'user_id'    => \Yii::$app->user->id ?? 0,
             'task_id'    => $task_id,
             'status'     => (int)$commandObj->getExeStatus(),
             'action'     => $action,

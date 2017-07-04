@@ -117,4 +117,10 @@ class WalleController extends Controller {
         }
     }
 
+    public function actionDeploying($taskId)
+    {
+        $deploy = new \app\components\Deploy;
+        $deploy->start($taskId);
+    }
+
 }
