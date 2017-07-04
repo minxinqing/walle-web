@@ -119,7 +119,6 @@ class Deploy {
 
             throw $e;
         }
-        $this->renderJson([]);
     }
 
     /**
